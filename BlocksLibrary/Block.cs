@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 namespace BlocksLibrary
 {
     [Serializable]
-    public class Block
+    public class Block : IDisposable
     {
         public Block()
         {
+            Name = "Generic Block";
             Width = 100;
             Height = 100;
             Sockets = new Socket[2];
@@ -36,21 +37,45 @@ namespace BlocksLibrary
 
         public virtual Bitmap Render()
         {
+            var sz = 15;
+            var gap = 10;
+
             var bmp = new Bitmap(Width, Height);
 
             using (var gr = Graphics.FromImage(bmp))
             {
-                gr.DrawButton(0, 0, Width, Height);
+                gr.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, Width, Height);
+
+                var y = (Height - Sockets.Length * sz - (Sockets.Length - 1) * gap) / 2;
 
                 for (var i = 0; i < Sockets.Length; i++)
                 {
-                    gr.DrawEllipse(Pens.Lime, 3, 3 + 4 * i, 2, 2);
+                    gr.DrawButton(0, y + (sz + gap) * i, sz, sz / 2);
                 }
+
+                y = (Height - Plugs.Length * sz - (Plugs.Length - 1) * gap) / 2;
 
                 for (var i = 0; i < Plugs.Length; i++)
                 {
-                    gr.DrawEllipse(Pens.Orange, Width - 5, 3 + 4 * i, 2, 2);
+                    gr.DrawButton(Width - sz, y + (sz + gap) * i, sz, sz / 2);
                 }
+
+                gr.DrawButton(sz - 2, 0, Width - 2 * sz + 4, Height);
+
+                //var cx = Width / 2;
+                //var cy = Height / 2;
+                var fnt = SystemFonts.CaptionFont;
+                var rt = new RectangleF(sz + 2, 2, Width - 2 * sz - 4, Height - 4);
+
+                gr.DrawString(
+                    Name, fnt,
+                    Brushes.Black,
+                    rt,
+                    new StringFormat()
+                    {
+                        LineAlignment = StringAlignment.Center,
+                        Alignment = StringAlignment.Center
+                    });
             }
 
             return bmp;
@@ -73,7 +98,7 @@ namespace BlocksLibrary
 
         public virtual bool AcceptsPlug(Socket socket, Plug plug)
         {
-            return true;    
+            return true;
         }
 
 
@@ -97,18 +122,20 @@ namespace BlocksLibrary
                 {
                     try
                     {
-                        while (BufferAvailable.WaitOne(10))
+                        while (!Disposed && BufferAvailable.WaitOne(10))
                         {
-                            SocketSignal newSignal;
+                            SocketSignal newSignal = null;
 
                             lock (Buffer)
                             {
-                                newSignal = Buffer.Dequeue();
+                                if (!Disposed)
+                                    newSignal = Buffer.Dequeue();
                             }
 
-                            ProcessSignal(
-                                newSignal.Socket,
-                                newSignal.Signal);
+                            if (!Disposed && newSignal != null)
+                                ProcessSignal(
+                                    newSignal.Socket,
+                                    newSignal.Signal);
                         }
                     }
                     finally
@@ -119,9 +146,26 @@ namespace BlocksLibrary
             }
         }
 
-        
+
         protected virtual void ProcessSignal(Socket socket, Signal signal)
         {
+        }
+
+
+        bool Disposed;
+
+        public void Dispose()
+        {
+            if (Disposed)
+                return;
+
+            Disposed = true;
+
+            lock (Buffer)
+            {
+                Buffer.Clear();
+                BufferAvailable.Reset();
+            }
         }
     }
 }
