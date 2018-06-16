@@ -4,3 +4,5 @@
 
 /.vs
 /packages
+/bin
+/obj
