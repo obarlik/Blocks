@@ -75,5 +75,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BlocksLibrary\BlocksLibrary.csproj">
+      <Project>{a2594343-b33e-4dad-b667-4940d48a1155}</Project>
+      <Name>BlocksLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

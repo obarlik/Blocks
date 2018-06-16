@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlocksEditor", "BlocksEdito
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlocksLibrary", "BlocksLibrary\BlocksLibrary.csproj", "{A2594343-B33E-4DAD-B667-4940D48A1155}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlocksTests", "BlocksTests\BlocksTests.csproj", "{A4663497-BC50-4A5E-BEDB-23446E27A823}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A2594343-B33E-4DAD-B667-4940D48A1155}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2594343-B33E-4DAD-B667-4940D48A1155}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2594343-B33E-4DAD-B667-4940D48A1155}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4663497-BC50-4A5E-BEDB-23446E27A823}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4663497-BC50-4A5E-BEDB-23446E27A823}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4663497-BC50-4A5E-BEDB-23446E27A823}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4663497-BC50-4A5E-BEDB-23446E27A823}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,7 +13,7 @@ namespace BlocksLibrary
         public static void DrawButton(this Graphics gr, int left, int top, int width, int height)
         {
             var p1 = new Point(left, top);
-            var p2 = new Point(width, height);
+            var p2 = new Point(width - 1, height - 1);
 
             var cGroup = new[]
             {
@@ -32,8 +32,8 @@ namespace BlocksLibrary
                 p1.Offset(1, 1);
                 p2.Offset(-1, -1);
             }
-
-            gr.DrawRectangle(Pens.Gray, p1.X, p1.Y, p2.X, p2.Y);
+            
+            gr.FillRectangle(Brushes.LightGray, p1.X, p1.Y, p2.X-1, p2.Y-1);
         }
     }
 }

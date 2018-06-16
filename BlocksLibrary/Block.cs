@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BlocksLibrary
@@ -12,7 +13,10 @@ namespace BlocksLibrary
     {
         public Block()
         {
-
+            Width = 100;
+            Height = 100;
+            Sockets = new Socket[2];
+            Plugs = new Plug[3];
         }
 
         public string Name { get; set; }
@@ -50,6 +54,74 @@ namespace BlocksLibrary
             }
 
             return bmp;
+        }
+
+
+        class SocketSignal
+        {
+            public Socket Socket { get; set; }
+            public Signal Signal { get; set; }
+        }
+
+
+        Queue<SocketSignal> Buffer = new Queue<SocketSignal>();
+
+        AutoResetEvent BufferAvailable = new AutoResetEvent(false);
+
+        Task ProcessTask { get; set; }
+
+
+        public virtual bool AcceptsPlug(Socket socket, Plug plug)
+        {
+            return true;    
+        }
+
+
+        public void ReceiveSignal(Socket socket, Signal signal)
+        {
+            lock (Buffer)
+            {
+                Buffer.Enqueue(new SocketSignal()
+                {
+                    Socket = socket,
+                    Signal = signal
+                });
+
+                socket.Status = SocketStatus.Ready;
+                BufferAvailable.Set();
+
+                if (ProcessTask != null)
+                    return;
+
+                ProcessTask = Task.Run(() =>
+                {
+                    try
+                    {
+                        while (BufferAvailable.WaitOne(10))
+                        {
+                            SocketSignal newSignal;
+
+                            lock (Buffer)
+                            {
+                                newSignal = Buffer.Dequeue();
+                            }
+
+                            ProcessSignal(
+                                newSignal.Socket,
+                                newSignal.Signal);
+                        }
+                    }
+                    finally
+                    {
+                        ProcessTask = null;
+                    }
+                });
+            }
+        }
+
+        
+        protected virtual void ProcessSignal(Socket socket, Signal signal)
+        {
         }
     }
 }

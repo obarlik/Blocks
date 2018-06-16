@@ -3,4 +3,10 @@
 ################################################################################
 
 /.vs
+/BlocksEditor/bin
 /BlocksEditor/obj
+/BlocksLibrary/bin
+/BlocksLibrary/obj
+/BlocksTests/bin
+/BlocksTests/obj
+/packages
